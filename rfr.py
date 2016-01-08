@@ -32,25 +32,7 @@ from time import time
 
 import numpy as np
 
-np.random.seed(0)
 
-# Load in the data - pandas DataFrame objects
-
-rats_tr = pd.read_csv('data/train.csv')
-rats_te = pd.read_csv('data/test.csv')
-# X_train, X_test, y_train, y_test = train_test_split(
-#     rats_tr.comments.fillna(''), rats_tr.quality, test_size=0.33, random_state=0)
-x, X_test, y, y_test = train_test_split(
-    rats_tr.comments.fillna(''), rats_tr.quality,
-    test_size=0.7, random_state=42)
-x = x.as_matrix()
-y = y.as_matrix()
-
-vocabulary = select_feature(x, y)
-
-v = TfidfVectorizer(vocabulary=vocabulary, use_idf=False)
-x = v.transform(rats_tr.comments.fillna(''))
-y = rats_tr.quality
 
 def grid_search(x, y):
     v = TfidfVectorizer(
@@ -170,7 +152,8 @@ def test_lasso_regressior(x, y, alpha):
     coef = []
     count = 0
     for train_index, test_index in kf:
-        print count; count+=1
+        print count
+        count+=1
         X_train, X_test = x[train_index], x[test_index]
         y_train, y_test = y[train_index], y[test_index]
         clf = linear_model.Lasso(alpha=alpha)
@@ -209,6 +192,27 @@ def select_feature(x, y):
         vocabulary.append(columns[i])
     return vocabulary
 
+np.random.seed(0)
+
+# Load in the data - pandas DataFrame objects
+
+rats_tr = pd.read_csv('data/train.csv')
+rats_te = pd.read_csv('data/test.csv')
+# X_train, X_test, y_train, y_test = train_test_split(
+#     rats_tr.comments.fillna(''), rats_tr.quality, test_size=0.33, random_state=0)
+x, X_test, y, y_test = train_test_split(
+    rats_tr.comments.fillna(''), rats_tr.quality,
+    test_size=0.7, random_state=42)
+x = x.as_matrix()
+y = y.as_matrix()
+
+vocabulary = select_feature(x, y)
+
+v = TfidfVectorizer(vocabulary=vocabulary, use_idf=False)
+x = v.transform(rats_tr.comments.fillna(''))
+y = rats_tr.quality
+
+
 grid_search(rats_tr.comments.fillna(''), rats_tr.quality)
 
 
@@ -227,4 +231,3 @@ grid_search(rats_tr.comments.fillna(''), rats_tr.quality)
 
 # print np.mean(scores)
 
-　　
